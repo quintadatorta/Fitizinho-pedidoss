@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fitizinho Lanches Naturais</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f2f7f5;
+            color: #2c3e50;
+            margin: 0;
+            padding: 12px;
+            font-size: 16px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        h1 {
+            color: #16a085;
+            text-align: center;
+            font-size: 24px;
+            margin: 5px 0;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+        h2 {
+            color: #2c3e50;
+            font-size: 18px;
+            border-bottom: 2px solid #edf2f0;
+            padding-bottom: 8px;
+            margin-top: 25px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="number"], input[type="datetime-local"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd1d1;
+            border-radius: 8px;
+            font-size: 16px; /* Evita o zoom automático chato no iPhone */
+            background-color: #fdfefe;
+        }
+        input:focus, select:focus {
+            border-color: #16a085;
+            outline: none;
+        }
+        .val-total {
+            background-color: #e8f8f5;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #117a65;
+            text-align: center;
+            margin: 20px 0;
+        }
+        button.btn-salvar {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 3px 6px rgba(39, 174, 96, 0.2);
+        }
+        /* Estilo dos Cards de Pedidos para Celular */
+        .lista-pedidos {
+            margin-top: 15px;
+        }
+        .pedido-card {
+            background: #fdfefe;
+            border: 1px solid #e5e8e8;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .pedido-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #eaeded;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+        .pedido-data {
+            color: #d35400;
+            font-weight: bold;
+        }
+        .pedido-corpo p {
+            margin: 4px 0;
+            font-size: 15px;
+        }
+        .pedido-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px dashed #eaeded;
+        }
+        .pedido-total {
+            font-weight: bold;
+            color: #27ae60;
+            font-size: 16px;
+        }
+        button.btn-concluir {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .sem-pedidos {
+            text-align: center;
+            color: #95a5a6;
+            font-style: italic;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Fitizinho Lanches Naturais</h1>
+    <p class="subtitle">Painel de Pedidos Mobile</p>
+
+    <h2>Novo Pedido</h2>
+    <form id="form-pedido">
+        <div class="form-group">
+            <label for="nome">Nome do Cliente:</label>
+            <input type="text" id="nome" required placeholder="Ex: Maria Silva">
+        </div>
+
+        <div class="form-group">
+            <label for="produto">Produto:</label>
+            <select id="produto" required>
+                <option value="Peito de Peru">Peito de Peru</option>
+                <option value="Presunto e Queijo">Presunto e Queijo</option>
+                <option value="Atum">Atum</option>
+                <option value="Frango Cremoso">Frango Cremoso</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" min="1" value="1" required oninput="calcularTotal()">
+        </div>
+
+        <div class="form-group">
+            <label for="dataEntrega">Data e Hora da Entrega:</label>
+            <input type="datetime-local" id="dataEntrega" required>
+        </div>
+
+        <div class="val-total">
+            Valor Total: R$ <span id="valor-total">10,00</span>
+        </div>
+
+        <button type="submit" class="btn-salvar">Salvar Pedido</button>
+    </form>
+
+    <h2>Encomendas Pendentes</h2>
+    <div id="lista-pedidos" class="lista-pedidos">
+        </div>
+</div>
+
+<script>
+    const precoUnitario = 10;
+    let pedidos = JSON.parse(localStorage.getItem('pedidos_fitizinho')) || [];
+
+    window.onload = function() {
+        atualizarLista();
+    };
+
+    function calcularTotal() {
+        const qtd = document.getElementById('quantidade').value;
+        const total = qtd * precoUnitario;
+        document.getElementById('valor-total').innerText = total.toFixed(2).replace('.', ',');
+    }
+
+    function atualizarLista() {
+        const containerPedidos = document.getElementById('lista-pedidos');
+        containerPedidos.innerHTML = '';
+
+        if (pedidos.length === 0) {
+            containerPedidos.innerHTML = `<div class="sem-pedidos">Nenhum pedido pendente 🎉</div>`;
+            return;
+        }
+
+        // Ordena por data de entrega (mais próximos primeiro)
+        pedidos.sort((a, b) => new Date(a.dataEntrega) - new Date(b.dataEntrega));
+
+        pedidos.forEach((pedido, index) => {
+            const dataObjeto = new Date(pedido.dataEntrega);
+            const dataFormatada = dataObjeto.toLocaleDateString('pt-BR') + ' às ' + dataObjeto.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            const totalFormatado = (pedido.quantidade * precoUnitario).toFixed(2).replace('.', ',');
+
+            const card = document.createElement('div');
+            card.className = 'pedido-card';
+            card.innerHTML = `
+                <div class="pedido-header">
+                    <span>Entrega:</span>
+                    <span class="pedido-data">${dataFormatada}</span>
+                </div>
+                <div class="pedido-corpo">
+                    <p><strong>Cliente:</strong> ${pedido.nome}</p>
+                    <p><strong>Lanche:</strong> ${pedido.produto}</p>
+                    <p><strong>Quantidade:</strong> ${pedido.quantidade} un.</p>
+                </div>
+                <div class="pedido-footer">
+                    <span class="pedido-total">R$ ${totalFormatado}</span>
+                    <button class="btn-concluir" onclick="concluirPedido(${index})">Concluir</button>
+                </div>
+            `;
+            containerPedidos.appendChild(card);
+        });
+    }
+
+    document.getElementById('form-pedido').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const nome = document.getElementById('nome').value;
+        const produto = document.getElementById('produto').value;
+        const quantidade = parseInt(document.getElementById('quantidade').value);
+        const dataEntrega = document.getElementById('dataEntrega').value;
+
+        const novoPedido = { nome, produto, quantidade, dataEntrega };
+
+        pedidos.push(novoPedido);
+        localStorage.setItem('pedidos_fitizinho', JSON.stringify(pedidos));
+
+        atualizarLista();
+
+        // Limpa campos
+        document.getElementById('nome').value = '';
+        document.getElementById('quantidade').value = '1';
+        document.getElementById('dataEntrega').value = '';
+        calcularTotal();
+    });
+
+    function concluirPedido(index) {
+        if(confirm("Concluir e remover este pedido?")) {
+            pedidos.splice(index, 1);
+            localStorage.setItem('pedidos_fitizinho', JSON.stringify(pedidos));
+            atualizarLista();
+        }
+    }
+</script>
+
+</body>
+</html>
